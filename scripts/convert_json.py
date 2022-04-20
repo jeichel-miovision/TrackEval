@@ -89,6 +89,7 @@ class Converter(ABC):
 
 
 class MOTChallengeClass(Enum):
+    DONT_CARE = -1
     PEDESTRIAN = 1
     PERSON_ON_VEHICLE = 2
     CAR = 3
@@ -127,7 +128,7 @@ class MOTChallengeConverter(Converter):
         width = right - left
         height = bottom - top
 
-        conf = MOTChallengeClass.PEDESTRIAN
+        conf = MOTChallengeClass.DONT_CARE
 
         world_x = event.world_ground_point_xyz[0] if event.world_ground_point_xyz else -1
         world_y = event.world_ground_point_xyz[1] if event.world_ground_point_xyz else -1
