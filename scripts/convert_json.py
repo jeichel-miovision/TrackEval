@@ -17,32 +17,35 @@ import typing as ty
 class DetectionEvent:
     def __init__(self,
                  *,
-                 view_id: str,
+                 view_uuid: str,
                  frame_num: int,
                  detection_box_tlbr: ty.List[float],
                  object_id: ty.Optional[str] = None,
                  vehicle_class: ty.Optional[str] = None,
                  vehicle_confidence: ty.Optional[float] = None,
+                 object_mask_xy: ty.Optional[ty.List[float]] = None,
                  world_ground_point_xyz: ty.Optional[ty.List[float]] = None,
                  clipped: ty.Optional[bool] = None) -> None:
-        self.view_id = view_id
+        self.view_uuid = view_uuid
         self.frame_num = frame_num
         self.detection_box_tlbr = detection_box_tlbr
         self.object_id = object_id
         self.vehicle_class = vehicle_class
         self.vehicle_confidence = vehicle_confidence
+        self.object_mask_xy = object_mask_xy
         self.world_ground_point_xyz = world_ground_point_xyz
         self.clipped = clipped
 
     @staticmethod
     def FromJSON(data, fps: float = 30):
         return DetectionEvent(
-            view_id=data['viewId'],
+            view_uuid=data['viewUuid'],
             frame_num=int(float(data['timestampMs']) / 1000 * fps) + 1,  # add the 1 to avoid a 0 index frame_num
             object_id=data['objectId'] if 'objectId' in data else None,
             detection_box_tlbr=data['detectionBoxTLBR'],
             vehicle_class=data['vehicleClassConfidence']['vehicleClass'] if 'vehicleClassConfidence' in data else None,
             vehicle_confidence=data['vehicleClassConfidence']['confidence'] if 'vehicleClassConfidence' in data else None,
+            object_mask_xy=data['objectMaskXY'] if 'objectMaskXY' in data else None,
             world_ground_point_xyz=data['worldGroundPointXYZ'] if 'worldGroundPointXYZ' in data else None,
             clipped=data['clipped'] if 'clipped' in data else None)
 
@@ -197,7 +200,7 @@ def convert_json_to_object_sequences(data, view_filter: ty.List[str] = []) -> ty
     for event_json in data['events']:
         event = DetectionEvent.FromJSON(event_json)
 
-        if len(view_filter) > 0 and not event.view_id in view_filter:
+        if len(view_filter) > 0 and not event.view_uuid in view_filter:
             continue
 
         if not event.object_id in obj_sequences:
@@ -231,26 +234,6 @@ def merge_adjacent_or_overlaping_sequences(sequences: ty.List[DetectionSequence]
     return merged_sequences
 
 
-def fill_sequence_gaps_empty(sequence: DetectionSequence):
-    frame_num = sequence.events[0].frame_num
-    events: ty.List[DetectionEvent] = []
-    for event in sequence.events:
-        for i in range(frame_num, event.frame_num):
-            empty_event_at_timestamp = DetectionEvent(
-                view_id=event.view_id,
-                frame_num=i,
-                detection_box_tlbr=[-1, -1, -1, -1],
-                object_id=None,
-                vehicle_class=None,
-                vehicle_confidence=0,
-                world_ground_point_xyz=[-1, -1, -1],
-                clipped=None)
-            events.append(empty_event_at_timestamp)
-        events.append(event)
-        frame_num = event.frame_num + 1
-    sequence.events = events
-
-
 def fill_sequence_gaps_interp_0(sequence: DetectionSequence):
     frame_num = sequence.events[0].frame_num
     last_event: DetectionEvent = None
@@ -258,7 +241,7 @@ def fill_sequence_gaps_interp_0(sequence: DetectionSequence):
     for event in sequence.events:
         for i in range(frame_num, event.frame_num):
             empty_event_at_timestamp = DetectionEvent(
-                view_id=event.view_id,
+                view_uuid=event.view_uuid,
                 frame_num=i,
                 detection_box_tlbr=last_event.detection_box_tlbr,
                 object_id=last_event.object_id,
@@ -281,7 +264,7 @@ def fill_sequence_gaps_interp_1(sequence: DetectionSequence):
         for i in range(frame_num, event.frame_num):
             alpha = (i - frame_num) / (event.frame_num - frame_num)
             empty_event_at_timestamp = DetectionEvent(
-                view_id=event.view_id,
+                view_uuid=event.view_uuid,
                 frame_num=i,
                 detection_box_tlbr=[
                     alpha * last_event.detection_box_tlbr[0] + (1 - alpha) * event.detection_box_tlbr[0],
@@ -326,6 +309,10 @@ if __name__ == '__main__':
                 fill_sequence_gaps_interp_1(seq)
 
         sequences = merge_adjacent_or_overlaping_sequences(obj_sequences)
+
+        if args['format'] == 'kitty':
+            # todo, test kitti and remove this message
+            print('WARNING: the KITTI converter is not well tested.')
 
         converter: Converter = format_type_converters[args['format']]
         for seq in sequences:

@@ -1,0 +1,171 @@
+
+Eval Config:
+USE_PARALLEL         : False                         
+NUM_PARALLEL_CORES   : 8                             
+BREAK_ON_ERROR       : True                          
+RETURN_ON_ERROR      : False                         
+LOG_ON_ERROR         : /home/jeichel/workspace/TrackEval/error_log.txt
+PRINT_RESULTS        : True                          
+PRINT_ONLY_COMBINED  : False                         
+PRINT_CONFIG         : True                          
+TIME_PROGRESS        : True                          
+DISPLAY_LESS_PROGRESS : False                         
+OUTPUT_SUMMARY       : True                          
+OUTPUT_EMPTY_CLASSES : True                          
+OUTPUT_DETAILED      : True                          
+PLOT_CURVES          : False                         
+
+MotChallenge2DBox Config:
+PRINT_CONFIG         : True                          
+GT_FOLDER            : /home/jeichel/workspace/TrackEval/data/gt/mot_challenge/
+TRACKERS_FOLDER      : /home/jeichel/workspace/TrackEval/data/trackers/mot_challenge/
+OUTPUT_FOLDER        : None                          
+TRACKERS_TO_EVAL     : None                          
+CLASSES_TO_EVAL      : ['pedestrian']                
+BENCHMARK            : shake                         
+SPLIT_TO_EVAL        : all                           
+INPUT_AS_ZIP         : False                         
+DO_PREPROC           : False                         
+TRACKER_SUB_FOLDER   : data                          
+OUTPUT_SUB_FOLDER    :                               
+TRACKER_DISPLAY_NAMES : None                          
+SEQMAP_FOLDER        : None                          
+SEQMAP_FILE          : None                          
+SEQ_INFO             : None                          
+GT_LOC_FORMAT        : {gt_folder}/{seq}/gt/gt.txt   
+SKIP_SPLIT_FOL       : False                         
+
+CLEAR Config:
+METRICS              : ['HOTA', 'CLEAR', 'Identity'] 
+THRESHOLD            : 0.5                           
+PRINT_CONFIG         : True                          
+
+Identity Config:
+METRICS              : ['HOTA', 'CLEAR', 'Identity'] 
+THRESHOLD            : 0.5                           
+PRINT_CONFIG         : True                          
+
+Evaluating 4 tracker(s) on 1 sequence(s) for 1 class(es) on MotChallenge2DBox dataset using the following metrics: HOTA, CLEAR, Identity, Count
+
+
+Evaluating general_model_8_7_1_no_interp
+
+    MotChallenge2DBox.get_raw_seq_data(general_model_8_7_1_no_interp, shake_3) 0.0431 sec
+    MotChallenge2DBox.get_preprocessed_seq_data(pedestrian)                0.0535 sec
+    HOTA.eval_sequence()                                                   0.0386 sec
+    CLEAR.eval_sequence()                                                  0.0035 sec
+    Identity.eval_sequence()                                               0.0053 sec
+    Count.eval_sequence()                                                  0.0000 sec
+1 eval_sequence(shake_3, general_model_8_7_1_no_interp)                  0.1450 sec
+
+All sequences for general_model_8_7_1_no_interp finished in 0.15 seconds
+
+HOTA: general_model_8_7_1_no_interp-pedestrianHOTA      DetA      AssA      DetRe     DetPr     AssRe     AssPr     LocA      RHOTA     HOTA(0)   LocA(0)   HOTALocA(0)
+shake_3                            18.107    17.151    19.139    27.383    30.058    27.553    43.212    82.924    22.885    22.52     79.584    17.922    
+COMBINED                           18.107    17.151    19.139    27.383    30.058    27.553    43.212    82.924    22.885    22.52     79.584    17.922    
+
+CLEAR: general_model_8_7_1_no_interp-pedestrianMOTA      MOTP      MODA      CLR_Re    CLR_Pr    MTR       PTR       MLR       sMOTA     CLR_TP    CLR_FN    CLR_FP    IDSW      MT        PT        ML        Frag      
+shake_3                            -24.911   80.325    -24.911   33.096    36.328    0         100       0         -31.423   93        188       163       0         0         2         0         1         
+COMBINED                           -24.911   80.325    -24.911   33.096    36.328    0         100       0         -31.423   93        188       163       0         0         2         0         1         
+
+Identity: general_model_8_7_1_no_interp-pedestrianIDF1      IDR       IDP       IDTP      IDFN      IDFP      
+shake_3                            34.637    33.096    36.328    93        188       163       
+COMBINED                           34.637    33.096    36.328    93        188       163       
+
+Count: general_model_8_7_1_no_interp-pedestrianDets      GT_Dets   IDs       GT_IDs    
+shake_3                            256       281       2         2         
+COMBINED                           256       281       2         2         
+
+Evaluating gt_with_interp
+
+    MotChallenge2DBox.get_raw_seq_data(gt_with_interp, shake_3)            0.0355 sec
+    MotChallenge2DBox.get_preprocessed_seq_data(pedestrian)                0.0470 sec
+    HOTA.eval_sequence()                                                   0.0724 sec
+    CLEAR.eval_sequence()                                                  0.0087 sec
+    Identity.eval_sequence()                                               0.0052 sec
+    Count.eval_sequence()                                                  0.0000 sec
+2 eval_sequence(shake_3, gt_with_interp)                                 0.1699 sec
+
+All sequences for gt_with_interp finished in 0.17 seconds
+
+HOTA: gt_with_interp-pedestrian    HOTA      DetA      AssA      DetRe     DetPr     AssRe     AssPr     LocA      RHOTA     HOTA(0)   LocA(0)   HOTALocA(0)
+shake_3                            100       100       100       100       100       100       100       100       100       100       100       100       
+COMBINED                           100       100       100       100       100       100       100       100       100       100       100       100       
+
+CLEAR: gt_with_interp-pedestrian   MOTA      MOTP      MODA      CLR_Re    CLR_Pr    MTR       PTR       MLR       sMOTA     CLR_TP    CLR_FN    CLR_FP    IDSW      MT        PT        ML        Frag      
+shake_3                            100       100       100       100       100       100       0         0         100       281       0         0         0         2         0         0         0         
+COMBINED                           100       100       100       100       100       100       0         0         100       281       0         0         0         2         0         0         0         
+
+Identity: gt_with_interp-pedestrianIDF1      IDR       IDP       IDTP      IDFN      IDFP      
+shake_3                            100       100       100       281       0         0         
+COMBINED                           100       100       100       281       0         0         
+
+Count: gt_with_interp-pedestrian   Dets      GT_Dets   IDs       GT_IDs    
+shake_3                            281       281       2         2         
+COMBINED                           281       281       2         2         
+
+Evaluating gt_no_interp
+
+    MotChallenge2DBox.get_raw_seq_data(gt_no_interp, shake_3)              0.0333 sec
+    MotChallenge2DBox.get_preprocessed_seq_data(pedestrian)                0.0408 sec
+    HOTA.eval_sequence()                                                   0.0396 sec
+    CLEAR.eval_sequence()                                                  0.0034 sec
+    Identity.eval_sequence()                                               0.0051 sec
+    Count.eval_sequence()                                                  0.0000 sec
+3 eval_sequence(shake_3, gt_no_interp)                                   0.1232 sec
+
+All sequences for gt_no_interp finished in 0.12 seconds
+
+HOTA: gt_no_interp-pedestrian      HOTA      DetA      AssA      DetRe     DetPr     AssRe     AssPr     LocA      RHOTA     HOTA(0)   LocA(0)   HOTALocA(0)
+shake_3                            33.808    33.808    33.808    33.808    100       33.808    100       100       33.808    33.808    100       33.808    
+COMBINED                           33.808    33.808    33.808    33.808    100       33.808    100       100       33.808    33.808    100       33.808    
+
+CLEAR: gt_no_interp-pedestrian     MOTA      MOTP      MODA      CLR_Re    CLR_Pr    MTR       PTR       MLR       sMOTA     CLR_TP    CLR_FN    CLR_FP    IDSW      MT        PT        ML        Frag      
+shake_3                            33.808    100       33.808    33.808    100       0         100       0         33.808    95        186       0         0         0         2         0         0         
+COMBINED                           33.808    100       33.808    33.808    100       0         100       0         33.808    95        186       0         0         0         2         0         0         
+
+Identity: gt_no_interp-pedestrian  IDF1      IDR       IDP       IDTP      IDFN      IDFP      
+shake_3                            50.532    33.808    100       95        186       0         
+COMBINED                           50.532    33.808    100       95        186       0         
+
+Count: gt_no_interp-pedestrian     Dets      GT_Dets   IDs       GT_IDs    
+shake_3                            95        281       2         2         
+COMBINED                           95        281       2         2         
+
+Evaluating general_model_8_7_1_with_interp
+
+    MotChallenge2DBox.get_raw_seq_data(general_model_8_7_1_with_interp, shake_3) 0.0407 sec
+    MotChallenge2DBox.get_preprocessed_seq_data(pedestrian)                0.0673 sec
+    HOTA.eval_sequence()                                                   0.0676 sec
+    CLEAR.eval_sequence()                                                  0.0087 sec
+    Identity.eval_sequence()                                               0.0054 sec
+    Count.eval_sequence()                                                  0.0000 sec
+4 eval_sequence(shake_3, general_model_8_7_1_with_interp)                0.1909 sec
+
+All sequences for general_model_8_7_1_with_interp finished in 0.19 seconds
+
+HOTA: general_model_8_7_1_with_interp-pedestrianHOTA      DetA      AssA      DetRe     DetPr     AssRe     AssPr     LocA      RHOTA     HOTA(0)   LocA(0)   HOTALocA(0)
+shake_3                            34.527    29.034    41.15     80.895    29.753    81.417    42.983    82.889    57.65     43.518    79.514    34.603    
+COMBINED                           34.527    29.034    41.15     80.895    29.753    81.417    42.983    82.889    57.65     43.518    79.514    34.603    
+
+CLEAR: general_model_8_7_1_with_interp-pedestrianMOTA      MOTP      MODA      CLR_Re    CLR_Pr    MTR       PTR       MLR       sMOTA     CLR_TP    CLR_FN    CLR_FP    IDSW      MT        PT        ML        Frag      
+shake_3                            -76.157   80.264    -76.157   97.865    35.995    100       0         0         -95.471   275       6         489       0         2         0         0         1         
+COMBINED                           -76.157   80.264    -76.157   97.865    35.995    100       0         0         -95.471   275       6         489       0         2         0         0         1         
+
+Identity: general_model_8_7_1_with_interp-pedestrianIDF1      IDR       IDP       IDTP      IDFN      IDFP      
+shake_3                            52.632    97.865    35.995    275       6         489       
+COMBINED                           52.632    97.865    35.995    275       6         489       
+
+Count: general_model_8_7_1_with_interp-pedestrianDets      GT_Dets   IDs       GT_IDs    
+shake_3                            764       281       2         2         
+COMBINED                           764       281       2         2         
+
+Timing analysis:
+MotChallenge2DBox.get_raw_seq_data                                     0.1527 sec
+MotChallenge2DBox.get_preprocessed_seq_data                            0.2086 sec
+HOTA.eval_sequence                                                     0.2182 sec
+CLEAR.eval_sequence                                                    0.0243 sec
+Identity.eval_sequence                                                 0.0210 sec
+Count.eval_sequence                                                    0.0000 sec
+eval_sequence                                                          0.6290 sec
+Evaluator.evaluate                                                     0.6362 sec
