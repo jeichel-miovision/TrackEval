@@ -137,13 +137,15 @@ class MOTChallengeConverter(Converter):
         width = right - left
         height = bottom - top
 
-        conf = MOTChallengeClass.PEDESTRIAN
+        conf = event.vehicle_confidence if event.vehicle_confidence else 1
+        vehicle_class = MOTChallengeClass.DONT_CARE
 
-        world_x = event.world_ground_point_xyz[0] if event.world_ground_point_xyz else -1
-        world_y = event.world_ground_point_xyz[1] if event.world_ground_point_xyz else -1
-        world_z = event.world_ground_point_xyz[2] if event.world_ground_point_xyz else -1
+        # world_x = event.world_ground_point_xyz[0] if event.world_ground_point_xyz else -1
+        # world_y = event.world_ground_point_xyz[1] if event.world_ground_point_xyz else -1
+        # world_z = event.world_ground_point_xyz[2] if event.world_ground_point_xyz else -1
 
-        return f'{frame_num},{object_uuid},{left:0.4f},{top:0.4f},{width:0.4f},{height:0.4f},{conf.value},{world_x:0.2f},{world_y:0.2f},{world_z:0.2f}'
+        # return f'{frame_num},{object_uuid},{left:0.4f},{top:0.4f},{width:0.4f},{height:0.4f},{conf:0.2f},{vehicle_class.value},{world_x:0.2f},{world_y:0.2f},{world_z:0.2f}'
+        return f'{frame_num},{object_uuid},{left:0.4f},{top:0.4f},{width:0.4f},{height:0.4f},{conf:0.2f},{vehicle_class.value}'
 
 
 class KITTIConverter(Converter):
