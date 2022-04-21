@@ -20,7 +20,7 @@ class DetectionEvent:
                  view_uuid: str,
                  frame_num: int,
                  detection_box_tlbr: ty.List[float],
-                 object_id: ty.Optional[str] = None,
+                 object_uuid: ty.Optional[str] = None,
                  vehicle_class: ty.Optional[str] = None,
                  vehicle_confidence: ty.Optional[float] = None,
                  object_mask_xy: ty.Optional[ty.List[float]] = None,
@@ -29,7 +29,7 @@ class DetectionEvent:
         self.view_uuid = view_uuid
         self.frame_num = frame_num
         self.detection_box_tlbr = detection_box_tlbr
-        self.object_id = object_id
+        self.object_uuid = object_uuid
         self.vehicle_class = vehicle_class
         self.vehicle_confidence = vehicle_confidence
         self.object_mask_xy = object_mask_xy
@@ -41,7 +41,7 @@ class DetectionEvent:
         return DetectionEvent(
             view_uuid=data['viewUuid'],
             frame_num=int(float(data['timestampMs']) / 1000 * fps) + 1,  # add the 1 to avoid a 0 index frame_num
-            object_id=data['objectId'] if 'objectId' in data else None,
+            object_uuid=data['objectUuid'] if 'objectUuid' in data else None,
             detection_box_tlbr=data['detectionBoxTLBR'],
             vehicle_class=data['vehicleClassConfidence']['vehicleClass'] if 'vehicleClassConfidence' in data else None,
             vehicle_confidence=data['vehicleClassConfidence']['confidence'] if 'vehicleClassConfidence' in data else None,
@@ -116,13 +116,13 @@ class MOTChallengeConverter(Converter):
     def convert(self, event: DetectionEvent) -> ty.Optional[str]:
         frame_num = event.frame_num
 
-        if event.object_id is None:
-            object_id = -1
+        if event.object_uuid is None:
+            object_uuid = -1
         else:
-            if not event.object_id in self.object_id_map:
+            if not event.object_uuid in self.object_id_map:
                 self.object_counter += 1
-                self.object_id_map[event.object_id] = self.object_counter
-            object_id = self.object_id_map[event.object_id]
+                self.object_id_map[event.object_uuid] = self.object_counter
+            object_uuid = self.object_id_map[event.object_uuid]
         
         top = event.detection_box_tlbr[0]
         left = event.detection_box_tlbr[1]
@@ -137,7 +137,7 @@ class MOTChallengeConverter(Converter):
         world_y = event.world_ground_point_xyz[1] if event.world_ground_point_xyz else -1
         world_z = event.world_ground_point_xyz[2] if event.world_ground_point_xyz else -1
 
-        return f'{frame_num},{object_id},{left:0.4f},{top:0.4f},{width:0.4f},{height:0.4f},{conf.value},{world_x:0.2f},{world_y:0.2f},{world_z:0.2f}'
+        return f'{frame_num},{object_uuid},{left:0.4f},{top:0.4f},{width:0.4f},{height:0.4f},{conf.value},{world_x:0.2f},{world_y:0.2f},{world_z:0.2f}'
 
 
 class KITTIConverter(Converter):
@@ -148,13 +148,13 @@ class KITTIConverter(Converter):
     def convert(self, event: DetectionEvent) -> ty.Optional[str]:
         frame_num = event.frame_num
 
-        if event.object_id is None:
+        if event.object_uuid is None:
             track_id = -1
         else:
-            if not event.object_id in self.object_id_map:
+            if not event.object_uuid in self.object_id_map:
                 self.object_counter += 1
-                self.object_id_map[event.object_id] = self.object_counter
-            track_id = self.object_id_map[event.object_id]
+                self.object_id_map[event.object_uuid] = self.object_counter
+            track_id = self.object_id_map[event.object_uuid]
 
         vehicle_type = event.vehicle_class if event.vehicle_class else 'DontCare'
 
@@ -203,15 +203,15 @@ def convert_json_to_object_sequences(data, view_filter: ty.List[str] = []) -> ty
         if len(view_filter) > 0 and not event.view_uuid in view_filter:
             continue
 
-        if not event.object_id in obj_sequences:
-            obj_sequences[event.object_id] = DetectionSequence()
-            obj_sequences[event.object_id].name = event.object_id
-        obj_sequences[event.object_id].addEvent(event)
+        if not event.object_uuid in obj_sequences:
+            obj_sequences[event.object_uuid] = DetectionSequence()
+            obj_sequences[event.object_uuid].name = event.object_uuid
+        obj_sequences[event.object_uuid].addEvent(event)
 
     sequences: ty.List[DetectionSequence] = []
-    for object_id in obj_sequences:
-        obj_sequences[object_id].sortEvents()
-        sequences.append(obj_sequences[object_id])
+    for object_uuid in obj_sequences:
+        obj_sequences[object_uuid].sortEvents()
+        sequences.append(obj_sequences[object_uuid])
     sequences.sort(key=lambda e: e.start_frame)
 
     return sequences
@@ -244,7 +244,7 @@ def fill_sequence_gaps_interp_0(sequence: DetectionSequence):
                 view_uuid=event.view_uuid,
                 frame_num=i,
                 detection_box_tlbr=last_event.detection_box_tlbr,
-                object_id=last_event.object_id,
+                object_uuid=last_event.object_uuid,
                 vehicle_class=last_event.vehicle_class,
                 vehicle_confidence=0,
                 world_ground_point_xyz=last_event.world_ground_point_xyz,
@@ -272,7 +272,7 @@ def fill_sequence_gaps_interp_1(sequence: DetectionSequence):
                     alpha * last_event.detection_box_tlbr[2] + (1 - alpha) * event.detection_box_tlbr[2],
                     alpha * last_event.detection_box_tlbr[3] + (1 - alpha) * event.detection_box_tlbr[3],
                 ],
-                object_id=last_event.object_id,
+                object_uuid=last_event.object_uuid,
                 vehicle_class=last_event.vehicle_class,
                 vehicle_confidence=0,
                 world_ground_point_xyz=[
