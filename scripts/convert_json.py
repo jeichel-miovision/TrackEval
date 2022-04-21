@@ -56,6 +56,7 @@ class DetectionSequence:
         self.start_frame: int = None
         self.duration: int = None
         self.events: ty.List[DetectionEvent] = []
+        self.frame_object_ids: ty.Set[ty.Tuple[int, int]] = set()
 
     def isEmpty(self) -> bool:
         return len(self.events) == 0
@@ -69,7 +70,12 @@ class DetectionSequence:
         return event.frame_num + 1 == self.start_frame or self.start_frame + self.duration == event.frame_num
 
     def addEvent(self, event: DetectionEvent):
+        event_key = (event.frame_num, event.object_uuid)
+        if event_key in self.frame_object_ids:
+            return
+
         self.events.append(event)
+        self.frame_object_ids.add(event_key)
         if self.start_frame is None or self.start_frame > event.frame_num:
             self.start_frame = event.frame_num
         if self.duration is None or self.start_frame + self.duration < event.frame_num:
@@ -131,7 +137,7 @@ class MOTChallengeConverter(Converter):
         width = right - left
         height = bottom - top
 
-        conf = MOTChallengeClass.DONT_CARE
+        conf = MOTChallengeClass.PEDESTRIAN
 
         world_x = event.world_ground_point_xyz[0] if event.world_ground_point_xyz else -1
         world_y = event.world_ground_point_xyz[1] if event.world_ground_point_xyz else -1
